@@ -1,0 +1,199 @@
+/*
+ * @(#) style.css
+ * 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
+ *
+ * <br> Copyright:  Copyright (c) 2019
+ * <br> Company:厦门畅享信息技术有限公司
+ * <br> @author ulyn
+ * <br> 2019-02-19 15:43:46
+ */
+
+body {
+  padding: 20px;
+  font: 14px Microsoft YaHei, Helvetica, Arial, sans-serif;
+}
+.title{
+  text-align: center;
+}
+.projects{
+  list-style: none;
+  padding: 0 15px 15px;
+  margin: 0;
+}
+.projects li{
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+}
+.projects li .btn-tool{
+  margin-right: 10px;
+}
+.projects li > div{
+  margin-top: 10px;
+}
+.projects li span{
+  font-weight: bold;
+}
+.projects li em{
+  font-style: normal;
+}
+.main-nav{
+  margin-bottom: 15px;
+}
+.project-folder{
+  list-style: none;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f9fbf7;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-flow: wrap;
+}
+.project-folder li{
+  width: 136px;
+  padding: 18px;
+  margin-top: 20px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.project-folder a{
+  /*width: 136px;*/
+  /*padding: 18px;*/
+  /*margin-top: 20px;*/
+  /*cursor: pointer;*/
+  border-radius: 4px;
+  display: block;
+}
+.project-folder li:hover{
+  background: #d6d5d0;
+}
+.project-folder li span{
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  word-break: break-all;
+}
+.project-folder li .top i{
+  font-size: 80px;
+  color: #e2c45c;
+}
+.project-folder li .top{
+  width: 100%;
+  height: 90px;
+  line-height: 90px;
+  text-align: center;
+}
+.project-folder li img{
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.folder-btns{
+  margin: 15px 0;
+}
+.folder-btns button{
+  margin-right: 10px;
+}
+.no-data{
+  margin: 15px 0;
+  color: #999;
+}
+.homepage{
+  border: 1px solid #ccc;
+}
+
+.projects-head{
+  overflow: hidden;
+  display: flex;
+  display: -webkit-flex;
+  background: #efefef;
+}
+
+.projects-head ul{
+  flex: 1;
+  list-style: none;
+  margin: 0;
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  padding: 0;
+}
+.projects-head li{
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+}
+.projects-head li.active{
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+.projects-head .rights{
+  display: flex;
+  display: -webkit-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+}
+.projects-head .rights .btn{
+  margin-left: 5px;
+}
+.project-type{
+  display: none;
+}
+.project-type.active{
+  display: block;
+}
+
+.projectpage h5 button{
+  margin-left: 15px;
+}
+.projectpage h5 button i{
+  margin-right: 5px;
+}
+.help-page h2{
+  font-size: 18px;
+  font-weight: bold;
+}
+.help-page > ul > li > span{
+  font-weight: bold;
+}
+.help-page li{
+  margin: 5px 0;
+}
+.viewer-title{
+  overflow: visible;
+}
+.project-folder li .top i.silver{
+  color:silver !important;
+}
+.project-folder li .top i.black{
+  color:#0f0f0f !important;
+}
+.project-folder li .top i.red{
+  color:red !important;
+}
+.project-folder li .top i.darkred{
+  color:darkred !important;
+}
+.project-folder li .top i.orange{
+  color:orange !important;
+}
+.project-folder li .top i.blue{
+  color:blue !important;
+}
+.project-folder li .top i.green{
+  color:green !important;
+}
+.project-folder li .top i.darkgray{
+  color:darkgray !important;
+}
+.project-folder li .top i.honeydew{
+  color:honeydew !important;
+}
+.project-folder li .top i.darkgrey{
+  color:darkgrey !important;
+}
+
+

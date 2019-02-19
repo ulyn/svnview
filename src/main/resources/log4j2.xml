@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ @(#) log4j2.xml
+  ~ 版权声明 厦门畅享信息技术有限公司, 版权所有 违者必究
+  ~
+  ~ <br> Copyright:  Copyright (c) 2018
+  ~ <br> Company:厦门畅享信息技术有限公司
+  ~ <br> @author ulyn
+  ~ <br> 2018-09-13 18:03:51
+  -->
+
+<Configuration monitorInterval="60">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n"/>
+        </Console>
+        <RollingFile name="RollingFile" fileName="svnview.log"
+                     filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz" immediateFlush="true" append="true">
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n"/>
+            <SizeBasedTriggeringPolicy size="50 MB"/>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+        <RollingFile name="openFile" fileName="openfile.log"
+                     filePattern="logs/$${date:yyyy-MM}/openfile-%d{MM-dd-yyyy}-%i.log" immediateFlush="true" append="true">
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="2000"/>
+        </RollingFile>
+        <Async name="Async" includeLocation="true">
+            <AppenderRef ref="RollingFile"/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <logger name="RocketmqCommon" additivity="false">
+            <level value="OFF"/>
+        </logger>
+
+
+        <logger name="RocketmqRemoting" additivity="false">
+            <level value="OFF"/>
+        </logger>
+
+
+        <logger name="RocketmqClient" additivity="false">
+            <level value="OFF"/>
+        </logger>
+
+        <Logger name="operator_log" additivity="false" level="info">
+            <AppenderRef ref="openFile"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.springframework.jdbc.core" additivity="false" level="debug">
+            <AppenderRef ref="openFile"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.springframework.retry" additivity="false" level="debug">
+            <AppenderRef ref="openFile"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

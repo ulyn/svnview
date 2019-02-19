@@ -1,0 +1,35 @@
+server:
+  context-path: /
+  port: 8080
+spring:
+  application:
+    name: svnview
+proxyConfig:
+#svn地址
+  svnUrl: "http://192.168.0.222:8080"
+#doc preview url
+  docPreviewUrl: "http://192.168.0.62:8012"
+#doc preview type
+  docPreviewType:
+    - "doc"
+    - "docx"
+    - "pdf"
+    - "ppt"
+    - "pptx"
+    - "xls"
+    - "xlsx"
+    - "zip"
+    - "rar"
+    - "txt"
+    - "java"
+    - "properties"
+    - "sql"
+    - "md"
+    - "json"
+    - "conf"
+    - "ini"
+    - "vue"
+    - "php"
+    - "py"
+    - "bat"
+    - "gitignore"
