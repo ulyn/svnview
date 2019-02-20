@@ -127,13 +127,13 @@ function imgView() {
     var $image = $('.project-folder');
 
     $image.viewer({
-                      title: function(image){
-                          return decodeURI(image.alt);
-                      },
+                      // title: function(image){
+                      //     return decodeURIComponent(image.alt);
+                      // },
                       viewed: function(){
                           // 添加到网址中
 
-                      }
+                      },url: 'data-imgurl'
                   });
 }
 
@@ -161,7 +161,7 @@ function init() {
             if($.inArray(fileType,ImageFileType) != -1){
                 //图片
                 html += '<li title="' + name + '" class="item-image">'
-                        + '<div class="top"><img src="' + url + '"></div>'
+                        + '<div class="top"><img src="' + url + '?scale=1" data-imgurl="' + url + '" alt="' + name + '"></div>'
                         + '<span>' + name +  '</span></li>'
             // }else if($.inArray(fileType,DocPreviewType)  != -1){
             }else{
