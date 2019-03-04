@@ -29,18 +29,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -94,20 +90,102 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             return;
         } else if (isPreviewResource(uri)) {
             String authorization = req.getHeader("Authorization");
-            if(StringUtils.isBlank(authorization)){
+            if (StringUtils.isBlank(authorization)) {
                 //未登录
-                ResponseUtils.renderHtml(resp,"<html><head></head><body>"
+                ResponseUtils.renderHtml(resp, "<html><head></head><body>"
                     + "<script>"
                     + "alert('尚未进行svn验证，请先验证');"
-                    + "location.href='"+ uri.substring(0,uri.lastIndexOf("/")) +"';"
+                    + "location.href='" + uri.substring(0, uri.lastIndexOf("/")) + "';"
                     + "</script>"
                     + "</body></html>");
                 return;
+            } else {
+                String previewUrl = myProxyConfig.getDocPreviewUrl()
+                    + "/onlinePreview?_head_Authorization=" + authorization
+                    + "&url=" + URLEncoder.encode(myProxyConfig.getSvnUrl() + uri, Charsets.UTF_8.displayName());
+                ResponseUtils.renderHtml(resp, "<!DOCTYPE html>\n"
+                    + "<html lang=\"en\">\n"
+                    + "<head>\n"
+                    + "    <meta charset=\"UTF-8\">\n"
+                    + "    <title>正在加载中...</title>\n"
+                    + "    <style type=\"text/css\">\n"
+                    + "        .box{\n"
+                    + "            width:300px;\n"
+                    + "            height:125px;\n"
+                    + "            border:0px solid #000;\n"
+                    + "            margin:200px auto 0;\n"
+                    + "        }\n"
+                    + "\n"
+                    + "        .box p{\n"
+                    + "            text-align: center;\n"
+                    + "            width:100%;\n"
+                    + "            float:left;\n"
+                    + "            /*p标签默认有样式*/\n"
+                    + "            margin:0;\n"
+                    + "            padding:0;\n"
+                    + "        }\n"
+                    + "\n"
+                    + "        .box div{\n"
+                    + "            width:30px;\n"
+                    + "            height:70px;\n"
+                    + "            margin:15px;\n"
+                    + "            float: left;\n"
+                    + "            background-color: hotpink;\n"
+                    + "            border-radius:10px;\n"
+                    + "        }\n"
+                    + "\n"
+                    + "        .box div:nth-child(1){\n"
+                    + "            background-color: lightcoral;\n"
+                    + "            /*缩、放 这是两次，所以是2*/\n"
+                    + "            /*animation:loading 0.5s ease 0s 2 alternate;*/\n"
+                    + "            animation: loading 0.5s ease 0s infinite alternate;\n"
+                    + "        }\n"
+                    + "        .box div:nth-child(2){\n"
+                    + "            background-color: darkorange;\n"
+                    + "            animation: loading 0.5s ease 0.1s infinite alternate;\n"
+                    + "        }\n"
+                    + "        .box div:nth-child(3){\n"
+                    + "            background-color: lightcoral;\n"
+                    + "            animation: loading 0.5s ease 0.2s infinite alternate;\n"
+                    + "        }\n"
+                    + "        .box div:nth-child(4){\n"
+                    + "            background-color: gold;\n"
+                    + "            animation: loading 0.5s ease 0.3s infinite alternate;\n"
+                    + "        }\n"
+                    + "        .box div:nth-child(5){\n"
+                    + "            background-color: burlywood;\n"
+                    + "            animation: loading 0.5s ease 0.4s infinite alternate;\n"
+                    + "        }\n"
+                    + "\n"
+                    + "        @keyframes loading{\n"
+                    + "            from{\n"
+                    + "                /*缩放y轴*/\n"
+                    + "                transform:scaleY(1)\n"
+                    + "            }\n"
+                    + "\n"
+                    + "            to{\n"
+                    + "                transform: scaleY(0.5);\n"
+                    + "            }\n"
+                    + "\n"
+                    + "        }\n"
+                    + "    </style>\n"
+                    + "</head>\n"
+                    + "<body>\n"
+                    + "    <div class=\"box\">\n"
+                    + "        <div></div>\n"
+                    + "        <div></div>\n"
+                    + "        <div></div>\n"
+                    + "        <div></div>\n"
+                    + "        <div></div>\n"
+                    + "        <p>正在生成预览，请耐心等待...</p>\n"
+                    + "    </div>\n"
+                    + "<script>"
+                    + "location.href='" + previewUrl + "';"
+                    + "</script>"
+                    + "</body>\n"
+                    + "</html>");
+                return;
             }
-            resp.sendRedirect(myProxyConfig.getDocPreviewUrl()
-                + "/onlinePreview?_head_Authorization=" + authorization
-                + "&url=" + URLEncoder.encode(myProxyConfig.getSvnUrl() + uri, Charsets.UTF_8.displayName()));
-            return;
         }
         // response的header设置，要在缓冲区装入响应内容之前，http的协议是按照响应状态行、各响应头和响应正文的顺序输出的，后写的header就不生效了。
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
