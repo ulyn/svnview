@@ -93,8 +93,19 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             IOUtils.copy(in, resp.getOutputStream());
             return;
         } else if (isPreviewResource(uri)) {
+            String authorization = req.getHeader("Authorization");
+            if(StringUtils.isBlank(authorization)){
+                //未登录
+                ResponseUtils.renderHtml(resp,"<html><head></head><body>"
+                    + "<script>"
+                    + "alert('尚未进行svn验证，请先验证');"
+                    + "location.href='"+ uri.substring(0,uri.lastIndexOf("/")) +"';"
+                    + "</script>"
+                    + "</body></html>");
+                return;
+            }
             resp.sendRedirect(myProxyConfig.getDocPreviewUrl()
-                + "/onlinePreview?_head_Authorization=" + req.getHeader("Authorization")
+                + "/onlinePreview?_head_Authorization=" + authorization
                 + "&url=" + URLEncoder.encode(myProxyConfig.getSvnUrl() + uri, Charsets.UTF_8.displayName()));
             return;
         }
