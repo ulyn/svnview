@@ -18,6 +18,7 @@
 package com.sunsharing.skyseamapproxy.web;
 
 import com.alibaba.fastjson.JSON;
+import com.sunsharing.component.utils.base.MapHelper;
 import com.sunsharing.component.utils.web.ResponseUtils;
 import com.sunsharing.component.utils.web.filter.CacheHttpServletResponseWrapper;
 import com.sunsharing.skyseamapproxy.config.MyProxyConfig;
@@ -36,6 +37,7 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,6 +50,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
     private List<String> imageFileType = Arrays.asList(new String[]{"png", "jpg", "jpeg", "gif", "bmp"});
+    private static Map<String, String> fileContentTypeMap = MapHelper.ofHashMap(
+        "htm", "text/html",
+        "html", "text/html",
+        "css", "text/css",
+        "js", "application/javascript",
+        "svg", "image/svg+xml"
+    );
 
     @Autowired
     MyProxyConfig myProxyConfig;
@@ -76,16 +85,7 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             //静态资源输出
             String sourceUri = uri.substring(staticSourcePath.length());
             InputStream in = ProxyServlet.class.getClassLoader().getResourceAsStream("static" + sourceUri);
-            if (uri.endsWith(".html") || uri.endsWith(".htm")) {
-                resp.setContentType("text/html");
-                resp.setHeader("Content-Type", "text/html");
-            } else if (uri.endsWith(".css")) {
-                resp.setContentType("text/css");
-                resp.setHeader("Content-Type", "text/css");
-            } else if (uri.endsWith(".js")) {
-                resp.setContentType("application/javascript");
-                resp.setHeader("Content-Type", "text/javascript");
-            }
+            setContentType(uri,resp);
             IOUtils.copy(in, resp.getOutputStream());
             return;
         } else if (isPreviewResource(uri)) {
@@ -192,16 +192,9 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         CacheHttpServletResponseWrapper cacheHttpServletResponseWrapper
             = new CacheHttpServletResponseWrapper(resp, outputStream, "utf-8");
         super.service(req, cacheHttpServletResponseWrapper);
-        if (uri.endsWith(".html") || uri.endsWith(".htm")) {
-            resp.setContentType("text/html");
-            resp.setHeader("Content-Type", "text/html");
-        } else if (uri.endsWith(".css")) {
-            resp.setContentType("text/css");
-            resp.setHeader("Content-Type", "text/css");
-        } else if (uri.endsWith(".js")) {
-            resp.setContentType("application/javascript");
-            resp.setHeader("Content-Type", "text/javascript");
-        } else if (StringUtils.isNotBlank(resp.getContentType()) && resp.getContentType().startsWith("text/html")) {
+        if(setContentType(uri,resp)){
+
+        }else if (StringUtils.isNotBlank(resp.getContentType()) && resp.getContentType().startsWith("text/html")) {
             //html的 认为是目录的页面，额外输出js
             String chartset = ResponseUtils.getCharsetByContentType(resp.getContentType());
             String html = new String(outputStream.toByteArray(), chartset);
@@ -250,4 +243,15 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         return false;
     }
 
+    private boolean setContentType(String uri,HttpServletResponse resp){
+        for (String key : fileContentTypeMap.keySet()) {
+            if (StringUtils.endsWithIgnoreCase(uri, "." + key)) {
+                System.out.println("find setContentType:" + uri);
+                resp.setContentType(fileContentTypeMap.get(key));
+                resp.setHeader("Content-Type", fileContentTypeMap.get(key));
+                return true;
+            }
+        }
+        return false;
+    }
 }
