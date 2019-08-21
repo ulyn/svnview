@@ -85,9 +85,25 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             //静态资源输出
             String sourceUri = uri.substring(staticSourcePath.length());
             InputStream in = ProxyServlet.class.getClassLoader().getResourceAsStream("static" + sourceUri);
-            setContentType(uri,resp);
+            setContentType(uri, resp);
             IOUtils.copy(in, resp.getOutputStream());
             return;
+        } else if (StringUtils.isNotBlank(req.getParameter("getDocsify"))) {
+            String targetPath = req.getParameter("getDocsify");
+            //输出docsify
+            DocsifyRender.render(targetPath, resp);
+            return;
+        } else if (uri.toLowerCase().endsWith(".md")) {
+            //md文件预览
+            String formDocsify = req.getHeader("svn-view");
+            if (StringUtils.isNotBlank(formDocsify)) {
+                //docsify来读取的，ignore，后续直接输出即可
+            } else {
+                //重定向到docsify
+                String url = uri.substring(0, uri.lastIndexOf("/"));
+                resp.sendRedirect(url + "/?getDocsify=" + URLEncoder.encode(uri, "utf-8"));
+                return;
+            }
         } else if (isPreviewResource(uri)) {
             String authorization = req.getHeader("Authorization");
             if (StringUtils.isBlank(authorization)) {
@@ -192,9 +208,9 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         CacheHttpServletResponseWrapper cacheHttpServletResponseWrapper
             = new CacheHttpServletResponseWrapper(resp, outputStream, "utf-8");
         super.service(req, cacheHttpServletResponseWrapper);
-        if(setContentType(uri,resp)){
+        if (setContentType(uri, resp)) {
 
-        }else if (StringUtils.isNotBlank(resp.getContentType()) && resp.getContentType().startsWith("text/html")) {
+        } else if (StringUtils.isNotBlank(resp.getContentType()) && resp.getContentType().startsWith("text/html")) {
             //html的 认为是目录的页面，额外输出js
             String chartset = ResponseUtils.getCharsetByContentType(resp.getContentType());
             String html = new String(outputStream.toByteArray(), chartset);
@@ -243,7 +259,7 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         return false;
     }
 
-    private boolean setContentType(String uri,HttpServletResponse resp){
+    private boolean setContentType(String uri, HttpServletResponse resp) {
         for (String key : fileContentTypeMap.keySet()) {
             if (StringUtils.endsWithIgnoreCase(uri, "." + key)) {
                 System.out.println("find setContentType:" + uri);
