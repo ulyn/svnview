@@ -37,8 +37,8 @@ public class DocsifyRender {
         "      loadNavbar: true,\n" +
         "      mergeNavbar: true,\n" +
         "      maxLevel: 4,\n" +
-        "      subMaxLevel: 2,\n" +
-        "      name: '在线MD预览',\n" +
+        "      subMaxLevel: 4,\n" +
+        "      name: '',\n" +
         "      requestHeaders: {\n" +
         "    'svn-view': 'true'\n" +
         "  },search: {\n" +
