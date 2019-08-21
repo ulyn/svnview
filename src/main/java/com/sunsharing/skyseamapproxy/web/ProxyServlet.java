@@ -210,6 +210,8 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         super.service(req, cacheHttpServletResponseWrapper);
         if (setContentType(uri, resp)) {
 
+        } else if (uri.toLowerCase().endsWith("md")) {
+            setNoCache(resp);
         } else if (StringUtils.isNotBlank(resp.getContentType()) && resp.getContentType().startsWith("text/html")) {
             //html的 认为是目录的页面，额外输出js
             String chartset = ResponseUtils.getCharsetByContentType(resp.getContentType());
@@ -219,9 +221,7 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
                     + "<script src='" + req.getContextPath() + "/static/dirview.js'></script></body>");
             byte[] bytes = html.getBytes(chartset);
             resp.setIntHeader("Content-Length", bytes.length);
-            resp.setHeader("Pragma", "no-cache");
-            resp.setHeader("Cache-Control", "no-cache");
-            resp.setDateHeader("Expires", -1);
+            setNoCache(resp);
             resp.setIntHeader("Content-Length", bytes.length);
             resp.getOutputStream().write(bytes);
             return;
@@ -238,6 +238,12 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             return;
         }
         resp.getOutputStream().write(outputStream.toByteArray());
+    }
+
+    private void setNoCache(HttpServletResponse resp) {
+        resp.setHeader("Pragma", "no-cache");
+        resp.setHeader("Cache-Control", "no-cache");
+        resp.setDateHeader("Expires", -1);
     }
 
     private boolean isImage(String uri) {
