@@ -1,0 +1,28 @@
+ul.project-folder {
+    display: block;
+}
+ul.project-folder li {
+    width: 100%;
+    padding: 8px;
+    margin-top: initial;
+}
+ul.project-folder li a {
+    display: flex;
+    align-items: center;
+}
+ul.project-folder li a .top {
+    width: 36px;
+    height: auto;
+}
+ul.project-folder li a .top i {
+    font-size: 20px;
+}
+ul.project-folder li a span {
+    margin-top: initial;
+    margin-left: 10px;
+}
+.project-folder li img {
+    display: block;
+    width: 24px;
+    height: 24px;
+}

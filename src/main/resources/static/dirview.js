@@ -83,6 +83,7 @@ DirView.loadCss(["/static/lib/bootstrap/dist/css/bootstrap.css",
                  "/static/lib/font-awesome/css/font-awesome.css",
                  "/static/lib/imageviewer/dist/viewer.css",
                  "/static/css/style.css"]);
+DirView.loadCss(["/static/css/detail_list_style.css"]);
 DirView.loadJs("/static/lib/jquery/dist/jquery.min.js",function () {
     DirView.loadJs("/static/lib/bootstrap/dist/js/bootstrap.min.js",function () {
         DirView.loadJs("/static/lib/imageviewer/dist/viewer.js",function () {
@@ -161,8 +162,8 @@ function init() {
             if($.inArray(fileType,ImageFileType) != -1){
                 //图片
                 html += '<li title="' + name + '" class="item-image">'
-                        + '<div class="top"><img src="' + url + '?scale=1" data-imgurl="' + url + '" alt="' + name + '"></div>'
-                        + '<span>' + name +  '</span></li>'
+                        + '<a href="javascript:void(0)" ><div class="top"><img src="' + url + '?scale=1" data-imgurl="' + url + '" alt="' + name + '"></div>'
+                        + '<span>' + name +  '</span></a></li>'
             // }else if($.inArray(fileType,DocPreviewType)  != -1){
             }else{
                 var className = FileTypeClassName[fileType];
