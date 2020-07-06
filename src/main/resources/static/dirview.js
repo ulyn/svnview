@@ -83,7 +83,12 @@ DirView.loadCss(["/static/lib/bootstrap/dist/css/bootstrap.css",
                  "/static/lib/font-awesome/css/font-awesome.css",
                  "/static/lib/imageviewer/dist/viewer.css",
                  "/static/css/style.css"]);
-DirView.loadCss(["/static/css/detail_list_style.css"]);
+
+var styleType = localStorage.getItem("style-type") || '列表';
+if(styleType == '列表'){
+    DirView.loadCss(["/static/css/detail_list_style.css"]);
+}
+
 DirView.loadJs("/static/lib/jquery/dist/jquery.min.js",function () {
     DirView.loadJs("/static/lib/bootstrap/dist/js/bootstrap.min.js",function () {
         DirView.loadJs("/static/lib/imageviewer/dist/viewer.js",function () {
@@ -118,7 +123,10 @@ function getType(file){
 function parseFiles() {
     var data = [];
     $("ul li").each(function (idx,li) {
-        data.push($("a",li).attr("href"));
+        let href = $("a",li).attr("href");
+        if(href){
+            data.push(href);
+        }
     })
     console.info("files",data);
     return data;
@@ -136,6 +144,27 @@ function imgView() {
 
                       },url: 'data-imgurl'
                   });
+}
+
+function showStyleChoose() {
+
+    var s = $('<div class="btn-group" style="position: absolute;top: 6px;right: 21px;">\n'
+            + '  <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n'
+            + '    浏览风格：'+ styleType +' <span class="caret"></span>\n'
+            + '  </button>\n'
+            + '  <ul class="dropdown-menu">\n'
+            + '     <li><a href="javascript:void(0);">列表</a></li>'
+            + '     <li><a href="javascript:void(0);">大图标</a></li>'
+            + '  </ul>\n'
+            + '</div>');
+
+    $("body").append(s);
+
+    s.find("li").click(function () {
+        localStorage.setItem("style-type",$(this).text());
+        window.location.reload();
+    })
+
 }
 
 function init() {
@@ -162,8 +191,8 @@ function init() {
             if($.inArray(fileType,ImageFileType) != -1){
                 //图片
                 html += '<li title="' + name + '" class="item-image">'
-                        + '<a href="javascript:void(0)" ><div class="top"><img src="' + url + '?scale=1" data-imgurl="' + url + '" alt="' + name + '"></div>'
-                        + '<span>' + name +  '</span></a></li>'
+                        + '<a href="javascript:void(0)"><div class="top"><img src="' + url + '?scale=1" data-imgurl="' + url + '" alt="' + name + '"></div>'
+                        + '<span class="js-showImg">' + name +  '</span></a></li>'
             // }else if($.inArray(fileType,DocPreviewType)  != -1){
             }else{
                 var className = FileTypeClassName[fileType];
@@ -182,5 +211,10 @@ function init() {
 
     imgView();
 
+    $(".js-showImg").unbind("click").bind("click",function (e) {
+        $(this).parent().find("img").click();
+    })
     $("body").show();
+
+    showStyleChoose();
 }
