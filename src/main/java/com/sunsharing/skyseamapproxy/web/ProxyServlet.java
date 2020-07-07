@@ -79,6 +79,13 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //只允许浏览器访问。
+        String accept = req.getHeader("Accept");
+        String acceptLanguage = req.getHeader("Accept-Language");
+        if (StringUtils.isBlank(accept) || StringUtils.isBlank(acceptLanguage)) {
+            throw new RuntimeException("抱歉，请使用原始地址进行SVN操作！");
+        }
+
         String uri = req.getRequestURI();
         String staticSourcePath = req.getContextPath() + "/static";
         if (uri.startsWith(staticSourcePath)) {
