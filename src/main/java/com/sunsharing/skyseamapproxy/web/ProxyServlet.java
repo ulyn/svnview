@@ -49,13 +49,16 @@ import lombok.extern.log4j.Log4j2;
 @WebServlet(urlPatterns = "/*")
 @Log4j2
 public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
-    private List<String> imageFileType = Arrays.asList(new String[]{"png", "jpg", "jpeg", "gif", "bmp"});
-    private static Map<String, String> fileContentTypeMap = MapHelper.ofHashMap(
+
+    private final String FAVICON_URI = "/favicon.ico";
+    private final static List<String> imageFileType = Arrays.asList(new String[]{"png", "jpg", "jpeg", "gif", "bmp"});
+    private final static Map<String, String> fileContentTypeMap = MapHelper.ofHashMap(
         "htm", "text/html",
         "html", "text/html",
         "css", "text/css",
         "js", "application/javascript",
-        "svg", "image/svg+xml"
+        "svg", "image/svg+xml",
+        "ico", "image/x-icon"
     );
 
     @Autowired
@@ -82,8 +85,18 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
         //只允许浏览器访问。
         String accept = req.getHeader("Accept");
         String acceptLanguage = req.getHeader("Accept-Language");
-        if (StringUtils.isBlank(accept) || StringUtils.isBlank(acceptLanguage)) {
+        if (StringUtils.isBlank(accept)
+            || StringUtils.isBlank(acceptLanguage)
+            || !StringUtils.equalsIgnoreCase("GET", req.getMethod())) {
             throw new RuntimeException("抱歉，请使用原始地址进行SVN操作！");
+        }
+        //如果是请求/favicon.ico 直接返回。svn不存在这个地址
+        if (StringUtils.equals(req.getRequestURI(), FAVICON_URI)) {
+            InputStream in = ProxyServlet.class.getClassLoader().getResourceAsStream(FAVICON_URI.substring(1));
+            setContentType(FAVICON_URI, resp);
+            ResponseUtils.setRespHeaderCache(resp, 3600 * 24 * 7);
+            IOUtils.copy(in, resp.getOutputStream());
+            return;
         }
 
         String uri = req.getRequestURI();
@@ -93,6 +106,11 @@ public class ProxyServlet extends org.mitre.dsmiley.httpproxy.ProxyServlet {
             String sourceUri = uri.substring(staticSourcePath.length());
             InputStream in = ProxyServlet.class.getClassLoader().getResourceAsStream("static" + sourceUri);
             setContentType(uri, resp);
+            if (sourceUri.startsWith("/lib")) {
+                ResponseUtils.setRespHeaderCache(resp, 3600 * 24 * 7);
+            } else {
+                ResponseUtils.setRespHeaderCache(resp, 3600);
+            }
             IOUtils.copy(in, resp.getOutputStream());
             return;
         } else if (StringUtils.isNotBlank(req.getParameter("getDocsify"))) {
